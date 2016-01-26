@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import dispatchonvalue as dv
+import random, pkg_resources
 from .basebot import Bot
 
-import random, pkg_resources
+dispatch = dv.DispatchOnValue()
 
 class SmartBot(Bot):
 
@@ -14,19 +15,17 @@ class SmartBot(Bot):
 
     async def process(self, event):
         try:
-            return dispatch.dispatch(event)
+            return dispatch.dispatch(event, self)
         except dv.DispatchFailed:
             return None
 
-dispatch = dv.DispatchOnValue()
-
 @dispatch.add({'type':'message', 'message': dv.any_a})
-def reply_smartly(self, event):
-    me_id = self.slack_info['self']['id']
+def reply_smartly(event, bot):
+    me_id = bot.slack_info['self']['id']
     me_mentioned = '<@{}>'.format(me_id)
 
     if me_mentioned in event['text']:
-        smarts = random.choice(self.smarties)
+        smarts = random.choice(bot.smarties)
         smarts = smarts.strip()
         smarts = smarts.replace('\r', '\n')
         response = "Hi <@{}>. {}".format(event['user'], smarts)
