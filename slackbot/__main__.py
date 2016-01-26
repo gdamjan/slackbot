@@ -8,7 +8,7 @@ import os, asyncio
 def get_config():
     Config = namedtuple('Config', ['timeout', 'token'])
     token = os.environ['BOT_SLACK_TOKEN']
-    timeout = os.environ.get('BOT_PING_INTERVAL', 20)
+    timeout = int(os.environ.get('BOT_PING_INTERVAL', 20))
     return Config(timeout, token)
 
 def run(Class):
