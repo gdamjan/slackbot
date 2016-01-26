@@ -19,7 +19,7 @@ class SmartBot(Bot):
         except dv.DispatchFailed:
             return None
 
-@dispatch.add({'type':'message', 'message': dv.any_a})
+@dispatch.add({'type':'message', 'text': dv.any_a})
 def reply_smartly(event, bot):
     me_id = bot.slack_info['self']['id']
     me_mentioned = '<@{}>'.format(me_id)
