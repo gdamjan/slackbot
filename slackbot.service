@@ -1,0 +1,17 @@
+[Unit]
+Description=slack bot
+After=network.target
+
+[Service]
+Type=simple
+
+User=alarm
+WorkingDirectory=/home/alarm/bot/
+Environment=PYTHONUSERBASE=/home/alarm/bot/py-env
+Environment=BOT_SLACK_TOKEN=xxx
+Environment=BOT_TIMEOUT=20
+ExecStart=/home/alarm/bot/py-env/bin/smartbot
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
