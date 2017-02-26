@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import random, pkg_resources
-from .metabot import MetaBot as Bot
+from .jsonpathbot import JsonPathBot as Bot
 
 class SmartBot(Bot):
 
