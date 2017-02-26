@@ -5,12 +5,11 @@ After=network.target
 [Service]
 Type=simple
 
-User=alarm
-WorkingDirectory=/home/alarm/bot/
-Environment=PYTHONUSERBASE=/home/alarm/bot/py-env
+User=slackbot
+Environment=PYTHONUSERBASE=/opt/slackbot
 Environment=SLACKBOT_TOKEN=xxx
 Environment=SLACKBOT_PING_INTERVAL=20
-ExecStart=/home/alarm/bot/py-env/bin/slackbot stupid
+ExecStart=/opt/slackbot/bin/slackbot stupid
 Restart=always
 
 [Install]
