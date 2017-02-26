@@ -1,6 +1,7 @@
 from collections import namedtuple
 import os
 import sys
+import signal
 import asyncio
 import argparse
 
@@ -28,9 +29,18 @@ elif args.mode == 'smart':
 else:
     sys.exit(1) # should not get here, since argparse would disallow it
 
+
+
 loop = asyncio.get_event_loop()
+
+def shutdown(loop):
+    bot.stop().add_done_callback(lambda _: loop.stop())
+
+for signame in ('SIGINT', 'SIGTERM'):
+    loop.add_signal_handler(getattr(signal, signame), shutdown, loop)
+
+asyncio.ensure_future(bot.start())
 try:
-    loop.run_until_complete(bot.run())
-except KeyboardInterrupt:
-    pass
-loop.close()
+    loop.run_forever()
+finally:
+    loop.close()

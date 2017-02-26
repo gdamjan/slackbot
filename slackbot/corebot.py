@@ -16,8 +16,14 @@ class CoreBot(metaclass=ABCMeta):
         self.websocket = None
         self._seq = itertools.count(1)
         self._timeouts = 0
+        self.stopping = False
+        self.stopped = asyncio.Future()
 
-    async def run(self):
+    def stop(self):
+        self.stopping = True
+        return self.stopped
+
+    async def start(self):
         slack = Slacker(self.config.token)
         resp = await slack.rtm.start()
         self.slack_info = resp.body
@@ -25,9 +31,11 @@ class CoreBot(metaclass=ABCMeta):
         ws_url = self.slack_info['url']
         self.websocket = await websockets.connect(ws_url)
         # endless async loop
-        while True:
+        while not self.stopping:
             await self.loop()
         await self.websocket.close()
+        self.stopped.set_result(None)
+
 
     async def loop(self):
         try:
