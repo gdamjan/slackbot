@@ -1,27 +1,36 @@
 from collections import namedtuple
-import os, asyncio
+import os
+import sys
+import asyncio
+import argparse
+
+parser = argparse.ArgumentParser(prog='slackbot')
+parser.add_argument("mode", choices=['smart','stupid'])
+parser.add_argument("-i", "--ping-interval", type=int,
+                    help="interval in seconds to send slack pings",
+                    default=int(os.environ.get('SLACKBOT_PING_INTERVAL', 20)))
+parser.add_argument("-t", "--token", type=str,
+                    help="slack access token",
+                    default=os.environ.get('SLACKBOT_TOKEN'))
 
 
-def get_config():
-    Config = namedtuple('Config', ['timeout', 'token'])
-    token = os.environ['SLACKBOT_TOKEN']
-    timeout = int(os.environ.get('SLACKBOT_PING_INTERVAL', 20))
-    return Config(timeout, token)
+args = parser.parse_args()
 
-def run(Class):
-    config = get_config()
-    bot = Class(config)
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(bot.run())
-    loop.close()
+Config = namedtuple('Config', ['timeout', 'token'])
+config = Config(args.ping_interval, args.token)
 
-def stupid():
+if args.mode == 'stupid':
     from .stupidbot import StupidBot
-    run(StupidBot)
-
-def smart():
+    bot = StupidBot(config)
+elif args.mode == 'smart':
     from .smartbot import SmartBot
-    run(SmartBot)
+    bot = SmartBot(config)
+else:
+    sys.exit(1) # should not get here, since argparse would disallow it
 
-if __name__ == '__main__':
-    stupid()
+loop = asyncio.get_event_loop()
+try:
+    loop.run_until_complete(bot.run())
+except KeyboardInterrupt:
+    pass
+loop.close()

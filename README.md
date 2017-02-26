@@ -17,10 +17,9 @@ PYTHONUSERBASE=$PWD/py-env pip install --user -r requirements.txt
 ```
 
 
-## Use (todo)
+## Use
 
 ```
 export PYTHONUSERBASE=$PWD/py-env
-export SLACKBOT_TOKEN='xxx-…'
-python -m slackbot
+python -m slackbot --help
 ```
