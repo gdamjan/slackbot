@@ -14,7 +14,6 @@ setup(name='slackbot',
       include_package_data=True,
       entry_points = {
         'console_scripts':
-            ['slackbot=slackbot.__main__:base',
-             'smartbot=slackbot.__main__:smart'],
+            ['slackbot=slackbot.__main__:main']
       }
 )
