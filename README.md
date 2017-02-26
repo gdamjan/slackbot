@@ -8,16 +8,16 @@
 * configure systemd service and install it (or set environment variables for cli)
 
 
-## Install
+## Install for development:
 
 requires python 3.5, uses asyncio, and the stuff from requirements.txt:
 
 ```
-PYTHONUSERBASE=$PWD/py-env pip install --user -r requirements.txt
+export PYTHONUSERBASE=$PWD/py-env
+pip install --user -e .
 ```
 
-
-## Use
+## Usage:
 
 ```
 export PYTHONUSERBASE=$PWD/py-env
