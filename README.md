@@ -7,9 +7,20 @@
 * install dependencies
 * configure systemd service and install it (or set environment variables for cli)
 
+
 ## Install
-requires python 3.5, and the stuff from requirements.txt:
+
+requires python 3.5, uses asyncio, and the stuff from requirements.txt:
 
 ```
-PYTHONUSERBASE=$PWD/py-env pip install --user -r .
+PYTHONUSERBASE=$PWD/py-env pip install --user -r requirements.txt
+```
+
+
+## Use (todo)
+
+```
+export PYTHONUSERBASE=$PWD/py-env
+export SLACKBOT_TOKEN='xxx-…'
+python -m slackbot
 ```

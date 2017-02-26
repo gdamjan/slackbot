@@ -1,14 +1,11 @@
-from .basebot import Bot
-from .smartbot import SmartBot
-
 from collections import namedtuple
 import os, asyncio
 
 
 def get_config():
     Config = namedtuple('Config', ['timeout', 'token'])
-    token = os.environ['BOT_SLACK_TOKEN']
-    timeout = int(os.environ.get('BOT_PING_INTERVAL', 20))
+    token = os.environ['SLACKBOT_TOKEN']
+    timeout = int(os.environ.get('SLACKBOT_PING_INTERVAL', 20))
     return Config(timeout, token)
 
 def run(Class):
@@ -18,11 +15,13 @@ def run(Class):
     loop.run_until_complete(bot.run())
     loop.close()
 
-def base():
-    run(Bot)
+def stupid():
+    from .stupidbot import StupidBot
+    run(StupidBot)
 
 def smart():
+    from .smartbot import SmartBot
     run(SmartBot)
 
 if __name__ == '__main__':
-    base()
+    stupid()

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-# requires: websockets slacker-asyncio
 from slacker import Slacker
 import websockets
 
-
+from abc import ABCMeta, abstractmethod
 import asyncio
 import json, itertools
 import sys
 
-class Bot():
+
+class CoreBot(metaclass=ABCMeta):
     def __init__(self, config):
         self.config = config
         self.slack_info = None
@@ -24,21 +24,10 @@ class Bot():
 
         ws_url = self.slack_info['url']
         self.websocket = await websockets.connect(ws_url)
-        # endless loop
+        # endless async loop
         while True:
             await self.loop()
         await self.websocket.close()
-
-    async def send(self, msg):
-        msg['id'] = next(self._seq)
-        data = json.dumps(msg)
-        await asyncio.wait_for(self.websocket.send(data), self.config.timeout)
-        print("> {}".format(data), file=sys.stderr, flush=True)
-
-    async def recv(self):
-        data = await asyncio.wait_for(self.websocket.recv(), self.config.timeout)
-        print("< {}".format(data), file=sys.stderr, flush=True)
-        return json.loads(data)
 
     async def loop(self):
         try:
@@ -55,5 +44,20 @@ class Bot():
             return
         await self.send(reply)
 
+    async def send(self, msg):
+        msg['id'] = next(self._seq)
+        data = json.dumps(msg)
+        await asyncio.wait_for(self.websocket.send(data), self.config.timeout)
+        self.log("> {}".format(data))
+
+    async def recv(self):
+        data = await asyncio.wait_for(self.websocket.recv(), self.config.timeout)
+        self.log("< {}".format(data))
+        return json.loads(data)
+
+    @abstractmethod
     async def process(self, event):
-        return
+        raise Exception(NotImplemented)
+
+    def log(self, msg):
+        print(msg, file=sys.stderr, flush=True)
