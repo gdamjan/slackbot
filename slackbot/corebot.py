@@ -24,18 +24,19 @@ class CoreBot(metaclass=ABCMeta):
         return self.stopped
 
     async def start(self):
-        slack = Slacker(self.config.token)
-        resp = await slack.rtm.start()
-        self.slack_info = resp.body
+        try:
+            slack = Slacker(self.config.token)
+            resp = await slack.rtm.start()
+            self.slack_info = resp.body
 
-        ws_url = self.slack_info['url']
-        self.websocket = await websockets.connect(ws_url)
-        # endless async loop
-        while not self.stopping:
-            await self.loop()
-        await self.websocket.close()
-        self.stopped.set_result(None)
-
+            ws_url = self.slack_info['url']
+            self.websocket = await websockets.connect(ws_url)
+            # endless async loop
+            while not self.stopping:
+                await self.loop()
+            await self.websocket.close()
+        finally:
+            self.stopped.set_result(None)
 
     async def loop(self):
         try:
