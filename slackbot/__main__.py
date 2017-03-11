@@ -33,10 +33,13 @@ def main():
 
     loop = asyncio.get_event_loop()
 
-    for signame in ('SIGINT', 'SIGTERM'):
-        loop.add_signal_handler(getattr(signal, signame), bot.stop)
+    async def shutdown():
+        await bot.shutdown()
+        loop.stop()
 
-    bot.stopped.add_done_callback(lambda _: loop.stop())
+    for signum in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(signum, lambda : asyncio.ensure_future(shutdown()))
+
     asyncio.ensure_future(bot.start())
     try:
         loop.run_forever()

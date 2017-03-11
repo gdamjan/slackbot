@@ -2,6 +2,7 @@
 
 from slacker import Slacker
 import websockets
+from websockets.exceptions import ConnectionClosed
 
 from abc import ABCMeta, abstractmethod
 import asyncio
@@ -19,9 +20,11 @@ class CoreBot(metaclass=ABCMeta):
         self.stopping = False
         self.stopped = asyncio.Future()
 
-    def stop(self):
+    async def shutdown(self):
         self.stopping = True
-        return self.stopped
+        self.log('Shutting down…')
+        await self.websocket.close()
+        await asyncio.wait_for(self.stopped, 30)
 
     async def start(self):
         try:
@@ -34,9 +37,9 @@ class CoreBot(metaclass=ABCMeta):
             # endless async loop
             while not self.stopping:
                 await self.loop()
-            await self.websocket.close()
         finally:
-            self.stopped.set_result(None)
+            self.stopped.set_result(True)
+            self.log('Stopped!')
 
     async def loop(self):
         try:
@@ -48,6 +51,11 @@ class CoreBot(metaclass=ABCMeta):
                 raise asyncio.TimeoutError
             await self.send({'type': 'ping'})
             return
+        except ConnectionClosed:
+            if self.stopping:
+                return
+            else:
+                raise
         reply = await self.process(event)
         if not reply:
             return
