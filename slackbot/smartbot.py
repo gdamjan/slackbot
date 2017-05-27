@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import random, pkg_resources
-from .jsonpathbot import JsonPathBot as Bot
+from .jmespathbot import JMESPathBot as Bot
 
 class SmartBot(Bot):
 
@@ -11,7 +11,7 @@ class SmartBot(Bot):
         self.smarties = open(fn, encoding='utf-8', newline='\n').readlines()
 
 
-    @Bot.match('$[?(type == "message")]')
+    @Bot.match("[?type=='message' && text]")
     async def reply_smartly(self, event):
         me_id = self.slack_info['self']['id']
         me_mentioned = '<@{}>'.format(me_id)
